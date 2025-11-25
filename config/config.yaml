@@ -1,0 +1,102 @@
+# CVE NLP Project Configuration
+
+# Data Collection
+data_collection:
+  nvd_api:
+    base_url: "https://services.nvd.nist.gov/rest/json/cves/2.0"
+    rate_limit:
+      requests_per_30s: 50 # 5 without key, 50 with key
+      delay_between_requests: 0.6 # seconds
+    timeout: 30
+    max_retries: 3
+
+  scraping:
+    enabled: true
+    fallback: true
+    user_agent: "CVE-NLP-Research-Bot/1.0"
+
+  batch_settings:
+    results_per_page: 2000
+    max_results: null # null = all CVEs
+    start_date: null # null = from beginning, format: "YYYY-MM-DD"
+    end_date: null # null = until now
+
+# Data Storage
+database:
+  type: "sqlite" # sqlite or postgresql
+  sqlite:
+    path: "data/cve_database.db"
+  postgresql:
+    host: "localhost"
+    port: 5432
+    database: "cve_db"
+    # user and password from environment variables
+
+  cache:
+    enabled: true
+    directory: "data/cache"
+    ttl_days: 7
+
+# NLP Processing
+nlp:
+  spacy:
+    model: "en_core_web_sm" # or en_core_web_lg for better accuracy
+    batch_size: 100
+    n_process: 4
+
+  transformers:
+    model: "bert-base-uncased"
+    max_length: 512
+    batch_size: 16
+    device: "cpu" # or "cuda" if GPU available
+
+  extraction:
+    use_spacy: true
+    use_transformers: true
+    use_rules: true
+    confidence_threshold: 0.7
+
+# Text Preprocessing
+preprocessing:
+  lowercase: false # Keep case for entity recognition
+  remove_special_chars: false
+  remove_stopwords: false
+  lemmatization: true
+  min_token_length: 2
+
+# Analysis
+analysis:
+  visualization:
+    enabled: true
+    output_dir: "data/visualizations"
+    formats: ["png", "html"]
+
+  metrics:
+    - "severity_distribution"
+    - "temporal_trends"
+    - "vendor_analysis"
+    - "cwe_patterns"
+    - "cvss_scores"
+
+  topic_modeling:
+    enabled: true
+    n_topics: 10
+    method: "lda" # lda or nmf
+
+# API Settings
+api:
+  title: "CVE NLP API"
+  version: "1.0.0"
+  description: "RESTful API for CVE data extraction and analysis"
+  host: "0.0.0.0"
+  port: 8000
+  cors_enabled: true
+  rate_limit:
+    requests_per_minute: 60
+
+# Logging
+logging:
+  level: "INFO" # DEBUG, INFO, WARNING, ERROR
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/cve_nlp.log"
+  console: true
