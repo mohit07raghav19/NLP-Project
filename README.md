@@ -67,12 +67,12 @@ A comprehensive NLP project that collects, processes, and analyzes CVE data from
 │                     CVE NLP SYSTEM                          │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
-│  ┌──────────────┐      ┌──────────────┐      ┌──────────┐ │
-│  │ Data Sources │─────>│ Collection   │─────>│  Cache   │ │
-│  │  - NVD API   │      │   Module     │      │          │ │
-│  │  - Scraping  │      └──────────────┘      └──────────┘ │
-│  └──────────────┘              │                           │
-│                                 ▼                           │
+│  ┌──────────────┐      ┌──────────────┐      ┌──────────┐   │
+│  │ Data Sources │─────>│ Collection   │─────>│  Cache   │   │
+│  │  - NVD API   │      │   Module     │      │          │   │
+│  │  - Scraping  │      └──────────────┘      └──────────┘   │
+│  └──────────────┘              │                            │
+│                                ▼                            │
 │                      ┌──────────────────┐                   │
 │                      │  Preprocessing   │                   │
 │                      │  - Clean text    │                   │
@@ -95,113 +95,20 @@ A comprehensive NLP project that collects, processes, and analyzes CVE data from
 │                      │    PostgreSQL    │                   │
 │                      └──────────────────┘                   │
 │                                 │                           │
-│                    ┌────────────┴────────────┐             │
-│                    ▼                         ▼             │
-│          ┌──────────────┐          ┌──────────────┐       │
-│          │  FastAPI     │          │  Analysis    │       │
-│          │  REST API    │          │  Engine      │       │
-│          └──────────────┘          └──────────────┘       │
-│                    │                         │             │
-│                    ▼                         ▼             │
-│          ┌──────────────┐          ┌──────────────┐       │
-│          │  Web UI      │          │ Insights &   │       │
-│          │  Dashboard   │          │ Visualize    │       │
-│          └──────────────┘          └──────────────┘       │
+│                    ┌────────────┴────────────┐              │
+│                    ▼                         ▼              │
+│          ┌──────────────┐          ┌──────────────┐         │
+│          │  FastAPI     │          │  Analysis    │         │
+│          │  REST API    │          │  Engine      │         │
+│          └──────────────┘          └──────────────┘         │
+│                    │                         │              │
+│                    ▼                         ▼              │
+│          ┌──────────────┐          ┌──────────────┐         │
+│          │  Web UI      │          │ Insights &   │         │
+│          │  Dashboard   │          │ Visualize    │         │
+│          └──────────────┘          └──────────────┘         │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
-```
-
----
-
-## 📁 Project Structure
-
-```
-CVE-NLP-Project/
-├── README.md                   # This file
-├── task.md                     # Project requirements
-├── requirements.txt            # Python dependencies
-├── .env.example               # Environment template
-├── .gitignore                 # Git ignore rules
-│
-├── config/                    # Configuration files
-│   └── config.yaml           # Main configuration
-│
-├── data/                      # Data directory
-│   ├── raw/                  # Raw CVE data from API
-│   ├── processed/            # Cleaned and processed data
-│   └── cache/               # API response cache
-│
-├── src/                       # Source code modules
-│   ├── data_collection/      # Data fetching and scraping
-│   │   ├── __init__.py
-│   │   ├── nvd_client.py    # NVD API client
-│   │   └── scraper.py       # Web scraping utilities
-│   │
-│   ├── preprocessing/        # Text preprocessing
-│   │   ├── __init__.py
-│   │   ├── cleaner.py       # Text cleaning
-│   │   └── tokenizer.py     # Tokenization
-│   │
-│   ├── nlp/                  # NLP processing
-│   │   ├── __init__.py
-│   │   ├── ner_extractor.py # Named Entity Recognition
-│   │   ├── transformer.py   # BERT-based extraction
-│   │   └── rules.py         # Rule-based patterns
-│   │
-│   ├── database/             # Database operations
-│   │   ├── __init__.py
-│   │   ├── models.py        # SQLAlchemy models
-│   │   ├── schema.py        # Database schema
-│   │   └── crud.py          # CRUD operations
-│   │
-│   ├── analysis/             # Analytics and visualization
-│   │   ├── __init__.py
-│   │   ├── trends.py        # Temporal analysis
-│   │   ├── statistics.py    # Statistical metrics
-│   │   └── visualize.py     # Plotting functions
-│   │
-│   └── utils/                # Utility functions
-│       ├── __init__.py
-│       ├── config.py        # Config loader
-│       └── logger.py        # Logging setup
-│
-├── api/                       # FastAPI backend
-│   ├── __init__.py
-│   ├── main.py              # API entry point
-│   ├── routes.py            # API endpoints
-│   └── schemas.py           # Pydantic models
-│
-├── ui/                        # Web interface
-│   ├── static/              # CSS, JS, images
-│   │   ├── css/
-│   │   ├── js/
-│   │   └── img/
-│   └── templates/           # HTML templates
-│       └── index.html
-│
-├── notebooks/                 # Jupyter notebooks
-│   ├── CVE_NLP_Pipeline.ipynb        # Main notebook
-│   ├── 01_Data_Collection.ipynb     # Data fetching
-│   ├── 02_NLP_Extraction.ipynb      # NER and extraction
-│   └── 03_Analysis.ipynb            # Analytics
-│
-├── scripts/                   # Utility scripts
-│   ├── setup.sh             # Project setup
-│   ├── download_models.py   # Download NLP models
-│   └── run_pipeline.py      # Execute full pipeline
-│
-├── tests/                     # Unit tests
-│   ├── test_collection.py
-│   ├── test_nlp.py
-│   └── test_api.py
-│
-├── models/                    # Saved ML models
-│   └── .gitkeep
-│
-└── docs/                      # Documentation
-    ├── setup_guide.md
-    ├── api_reference.md
-    └── resources.md
 ```
 
 ---
