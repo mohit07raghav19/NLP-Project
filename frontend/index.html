@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CVE Analyzer - Advanced Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Chart.js for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="logo">CVE Analyzer</h1>
+                <div class="header-actions">
+                    <button id="themeToggle" class="icon-btn" title="Toggle Dark Mode">
+                        <span class="theme-icon">🌙</span>
+                    </button>
+                    <button id="refreshBtn" class="icon-btn" title="Refresh Data">
+                        <span class="refresh-icon">🔄</span>
+                    </button>
+                    <div class="health-status" id="healthStatus">
+                        <span class="status-dot"></span>
+                        <span class="status-text">Checking...</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Tabs Navigation -->
+        <nav class="tabs-nav">
+            <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+            <button class="tab-btn" data-tab="list">CVE List</button>
+            <button class="tab-btn" data-tab="analytics">Analytics</button>
+        </nav>
+
+        <!-- Tab Content -->
+        <div class="tab-content active" id="dashboard">
+            <!-- Statistics Dashboard -->
+            <section class="stats-section" id="statsSection">
+                <div class="stats-grid">
+                    <div class="stat-card" data-tooltip="Total vulnerabilities in database">
+                        <div class="stat-value" id="totalCves">-</div>
+                        <div class="stat-label">Total CVEs</div>
+                    </div>
+                    <div class="stat-card critical" data-tooltip="CVSS Score: 9.0-10.0">
+                        <div class="stat-value" id="criticalCount">-</div>
+                        <div class="stat-label">Critical</div>
+                    </div>
+                    <div class="stat-card high" data-tooltip="CVSS Score: 7.0-8.9">
+                        <div class="stat-value" id="highCount">-</div>
+                        <div class="stat-label">High</div>
+                    </div>
+                    <div class="stat-card medium" data-tooltip="CVSS Score: 4.0-6.9">
+                        <div class="stat-value" id="mediumCount">-</div>
+                        <div class="stat-label">Medium</div>
+                    </div>
+                    <div class="stat-card low" data-tooltip="CVSS Score: 0.1-3.9">
+                        <div class="stat-value" id="lowCount">-</div>
+                        <div class="stat-label">Low</div>
+                    </div>
+                    <div class="stat-card" data-tooltip="Average CVSS score across all CVEs">
+                        <div class="stat-value" id="avgScore">-</div>
+                        <div class="stat-label">Avg CVSS</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quick Actions -->
+            <section class="quick-actions">
+                <h2>Quick Actions</h2>
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="switchTab('list')">
+                        <span class="action-icon">📋</span>
+                        <span>View All CVEs</span>
+                    </button>
+                    <button class="action-btn" onclick="switchTab('analytics')">
+                        <span class="action-icon">📊</span>
+                        <span>View Analytics</span>
+                    </button>
+                    <button class="action-btn" id="exportAllBtn">
+                        <span class="action-icon">📤</span>
+                        <span>Export Data</span>
+                    </button>
+                </div>
+            </section>
+        </div>
+
+        <!-- List Tab -->
+        <div class="tab-content" id="list">
+            <!-- Search & Filters -->
+            <section class="search-section">
+                <div class="search-bar">
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="Search CVEs by description, CVE ID, vendor, or product..."
+                        class="search-input"
+                        autocomplete="off"
+                    >
+                    <div id="searchSuggestions" class="search-suggestions"></div>
+                    <button id="searchBtn" class="btn-primary">Search</button>
+                </div>
+
+                <div class="filters-advanced">
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label>Severity</label>
+                            <div class="multi-select">
+                                <button class="multi-select-btn" id="severityBtn">All Severities ▾</button>
+                                <div class="multi-select-dropdown" id="severityDropdown">
+                                    <label><input type="checkbox" value="CRITICAL"> Critical</label>
+                                    <label><input type="checkbox" value="HIGH"> High</label>
+                                    <label><input type="checkbox" value="MEDIUM"> Medium</label>
+                                    <label><input type="checkbox" value="LOW"> Low</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="filter-group">
+                            <label>CVSS Range</label>
+                            <div class="range-inputs">
+                                <input type="number" id="minCvssInput" placeholder="Min" min="0" max="10" step="0.1" class="filter-input small">
+                                <span>-</span>
+                                <input type="number" id="maxCvssInput" placeholder="Max" min="0" max="10" step="0.1" class="filter-input small">
+                            </div>
+                        </div>
+
+                        <div class="filter-group">
+                            <label>Date Range</label>
+                            <div class="range-inputs">
+                                <input type="date" id="startDate" class="filter-input small" title="Start date" aria-label="Start date">
+                                <span>to</span>
+                                <input type="date" id="endDate" class="filter-input small" title="End date" aria-label="End date">
+                            </div>
+                        </div>
+
+                        <div class="filter-group">
+                            <label>Sort By</label>
+                            <select id="sortBy" class="filter-select">
+                                <option value="published_desc">Newest First</option>
+                                <option value="published_asc">Oldest First</option>
+                                <option value="cvss_desc">CVSS: High to Low</option>
+                                <option value="cvss_asc">CVSS: Low to High</option>
+                                <option value="cve_id_asc">CVE ID: A-Z</option>
+                                <option value="cve_id_desc">CVE ID: Z-A</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label>Per Page</label>
+                            <select id="perPage" class="filter-select">
+                                <option value="10">10</option>
+                                <option value="20" selected>20</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="filter-actions">
+                        <button id="clearFiltersBtn" class="btn-secondary">Clear All Filters</button>
+                        <button id="exportFilteredBtn" class="btn-secondary">Export Results</button>
+                    </div>
+                </div>
+
+                <!-- Active Filters Display -->
+                <div id="activeFilters" class="active-filters"></div>
+            </section>
+
+            <!-- CVE Results -->
+            <section class="results-section">
+                <div class="results-header">
+                    <h2>CVE Results</h2>
+                    <span class="results-count" id="resultsCount">0 results</span>
+                </div>
+
+                <div id="loadingIndicator" class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading...</p>
+                </div>
+
+                <div id="errorMessage" class="error-message"></div>
+
+                <div id="cveList" class="cve-list"></div>
+
+                <div class="pagination" id="pagination">
+                    <button id="prevBtn" class="btn-page" disabled>Previous</button>
+                    <span id="pageInfo">Page 1</span>
+                    <button id="nextBtn" class="btn-page">Next</button>
+                </div>
+            </section>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div class="tab-content" id="analytics">
+            <section class="analytics-section">
+                <h2>Vulnerability Analytics</h2>
+
+                <!-- Summary Stats -->
+                <div class="analytics-summary">
+                    <div class="summary-card">
+                        <h4>Critical Risk CVEs</h4>
+                        <p class="summary-value" id="criticalRiskCount">-</p>
+                        <p class="summary-label">CVSS Score ≥ 9.0</p>
+                    </div>
+                    <div class="summary-card">
+                        <h4>High Risk CVEs</h4>
+                        <p class="summary-value" id="highRiskCount">-</p>
+                        <p class="summary-label">CVSS Score 7.0-8.9</p>
+                    </div>
+                    <div class="summary-card">
+                        <h4>Recent CVEs</h4>
+                        <p class="summary-value" id="recentCount">-</p>
+                        <p class="summary-label">Last 30 days</p>
+                    </div>
+                    <div class="summary-card">
+                        <h4>Most Targeted</h4>
+                        <p class="summary-value" id="topVendor">-</p>
+                        <p class="summary-label">Vendor with most CVEs</p>
+                    </div>
+                </div>
+
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h3>Severity Distribution</h3>
+                        <canvas id="severityChart"></canvas>
+                    </div>
+
+                    <div class="chart-card">
+                        <h3>CVSS Score Distribution</h3>
+                        <canvas id="cvssChart"></canvas>
+                    </div>
+
+                    <div class="chart-card full-width">
+                        <h3>CVEs Published Over Time</h3>
+                        <canvas id="timelineChart"></canvas>
+                    </div>
+
+                    <div class="chart-card full-width">
+                        <h3>Top 10 Affected Vendors</h3>
+                        <canvas id="vendorChart"></canvas>
+                    </div>
+
+                    <div class="chart-card full-width">
+                        <h3>Top 10 Affected Products</h3>
+                        <canvas id="productChart"></canvas>
+                    </div>
+
+                    <div class="chart-card">
+                        <h3>Severity Trend (Monthly)</h3>
+                        <canvas id="severityTrendChart"></canvas>
+                    </div>
+
+                    <div class="chart-card">
+                        <h3>Average CVSS by Severity</h3>
+                        <canvas id="avgCvssChart"></canvas>
+                    </div>
+
+                    <div class="chart-card full-width">
+                        <h3>Top 10 Vulnerability Types</h3>
+                        <canvas id="vulnTypesChart"></canvas>
+                    </div>
+
+                    <div class="chart-card">
+                        <h3>Attack Vector Distribution</h3>
+                        <canvas id="attackVectorChart"></canvas>
+                    </div>
+
+                    <div class="chart-card">
+                        <h3>Attack Complexity Distribution</h3>
+                        <canvas id="attackComplexityChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Key Insights -->
+                <div class="insights-section">
+                    <h3>Key Insights</h3>
+                    <div id="insightsContainer" class="insights-grid"></div>
+                </div>
+            </section>
+        </div>
+
+        <!-- CVE Detail Modal -->
+        <div id="cveModal" class="modal">
+            <div class="modal-content">
+                <button class="modal-close" id="modalClose">&times;</button>
+                <div id="cveDetail"></div>
+            </div>
+        </div>
+
+        <!-- Toast Notifications -->
+        <div id="toastContainer" class="toast-container"></div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

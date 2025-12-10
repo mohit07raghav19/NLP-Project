@@ -1,0 +1,22 @@
+CVE NLP Analysis - Statistics Summary
+==================================================
+
+Analysis Date: 2025-12-10 13:49:21
+Total CVEs Analyzed: 2000
+
+Severity Distribution:
+  MEDIUM: 920 (46.0%)
+  HIGH: 538 (26.9%)
+  UNKNOWN: 324 (16.2%)
+  CRITICAL: 134 (6.7%)
+  LOW: 84 (4.2%)
+
+Average CVSS Score: 5.47
+Median CVSS Score: 6.30
+
+Top 5 Vendors:
+  WordPress: 269
+  Stored Cross-Site Scripting: 89
+  HTML: 70
+  API: 57
+  SQL: 47

@@ -63,7 +63,10 @@ class CVEResponse(BaseModel):
     cvss_severity: Optional[str]
     affected_vendors: Optional[List[str]]
     affected_products: Optional[List[str]]
-    
+    vulnerability_types: Optional[List[str]] = None
+    attack_vector: Optional[str] = None
+    attack_complexity: Optional[str] = None
+
     class Config:
         from_attributes = True
 
@@ -121,16 +124,16 @@ async def health_check():
 
 @app.get("/api/v1/cves", response_model=CVEListResponse, tags=["CVEs"])
 async def get_cves(
-    limit: int = Query(100, ge=1, le=1000, description="Number of results"),
+    limit: int = Query(100, ge=1, le=5000, description="Number of results"),
     offset: int = Query(0, ge=0, description="Offset for pagination"),
     severity: Optional[str] = Query(None, description="Filter by severity (LOW, MEDIUM, HIGH, CRITICAL)"),
     min_cvss: Optional[float] = Query(None, ge=0, le=10, description="Minimum CVSS score")
 ):
     """
     Get list of CVEs with optional filtering.
-    
+
     Parameters:
-    - **limit**: Maximum number of results (1-1000)
+    - **limit**: Maximum number of results (1-5000)
     - **offset**: Pagination offset
     - **severity**: Filter by severity level
     - **min_cvss**: Minimum CVSS score threshold
